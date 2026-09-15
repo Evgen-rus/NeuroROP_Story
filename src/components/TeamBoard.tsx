@@ -1,7 +1,8 @@
 import { motion } from 'motion/react'
-import { managerLoad, managers, sideDeals, teamTotals } from '../data/story'
+import { eventChipIds, managerLoad, managers, sideDeals, teamTotals } from '../data/story'
 import { ProductFrame, StatusDot } from './ProductFrame'
 import { TrafficLight } from './TrafficLight'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 function countLabel(count: number, one: string, few: string, many: string) {
   const n10 = count % 10
@@ -17,17 +18,19 @@ type TeamBoardProps = {
 }
 
 export function TeamBoard({ phase = 'assemble' }: TeamBoardProps) {
+  const reduced = usePrefersReducedMotion()
   const focusManager = phase === 'focus' || phase === 'extract' || phase === 'stuck'
   const extract = phase === 'extract' || phase === 'stuck'
+  const layoutTransition = { duration: reduced ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] as const }
 
   return (
     <ProductFrame
       title="Итог команды"
       subtitle="Демонстрационные данные презентации"
       pills={[
-        { label: 'Всего сделок', value: String(teamTotals.deals) },
-        { label: 'Звонков', value: String(teamTotals.calls) },
-        { label: 'Сообщений', value: String(teamTotals.messages) },
+        { label: 'Всего сделок', value: String(teamTotals.deals), layoutId: eventChipIds.Задача },
+        { label: 'Звонков', value: String(teamTotals.calls), layoutId: eventChipIds.Звонок },
+        { label: 'Сообщений', value: String(teamTotals.messages), layoutId: eventChipIds.Сообщение },
       ]}
     >
       <div className="team-grid">
@@ -67,7 +70,9 @@ export function TeamBoard({ phase = 'assemble' }: TeamBoardProps) {
             }
             return (
               <motion.div
-                layoutId={isFocus ? 'deal-19023' : undefined}
+                layoutId={isFocus && !reduced ? eventChipIds.КП : undefined}
+                layout={!reduced}
+                transition={{ layout: layoutTransition }}
                 key={deal.id}
                 className={`deal-mini deal-${deal.status}`}
               >
@@ -83,7 +88,12 @@ export function TeamBoard({ phase = 'assemble' }: TeamBoardProps) {
         </aside>
       </div>
       {extract ? (
-        <motion.div layoutId="deal-19023" className={`extracted-deal ${phase === 'stuck' ? 'is-stuck' : ''}`}>
+        <motion.div
+          layoutId={reduced ? undefined : eventChipIds.КП}
+          layout={!reduced}
+          transition={{ layout: layoutTransition }}
+          className={`extracted-deal ${phase === 'stuck' ? 'is-stuck' : ''}`}
+        >
           <small>Сделка #19023</small>
           <h4>Проект Альфа</h4>
           <p>2 200 000 ₽ · КП отправлено на согласование</p>

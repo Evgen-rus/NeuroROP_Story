@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Checkpoint } from '../components/Checkpoint'
 import { DealQuiz } from '../components/DealQuiz'
 import { DozhimWorkspace } from '../components/DozhimWorkspace'
-import { FollowupSteps } from '../components/FollowupSteps'
 import { ContactCase } from '../components/ProofCases'
 import { useChapterPhase } from '../hooks/useChapterPhase'
 
@@ -12,7 +11,7 @@ export function ChapterDozhim() {
   const { index } = useChapterPhase(CHAPTER_IDS)
   const [opened, setOpened] = useState(false)
   const open = opened || index > 0
-  const mode = index >= 3 ? 'followup' : index >= 2 ? 'voice' : 'open'
+  const mode = !open ? 'entry' : index >= 3 ? 'followup' : index >= 2 ? 'voice' : 'open'
 
   return (
     <div className="chapter">
@@ -34,15 +33,7 @@ export function ChapterDozhim() {
         </Checkpoint>
       </div>
       <div className="chapter-visual">
-        {open ? (
-          mode === 'followup' ? (
-            <FollowupSteps />
-          ) : (
-            <DozhimWorkspace mode={mode} />
-          )
-        ) : (
-          <DozhimWorkspace mode="entry" onOpen={() => setOpened(true)} />
-        )}
+        <DozhimWorkspace mode={mode} onOpen={() => setOpened(true)} />
       </div>
     </div>
   )

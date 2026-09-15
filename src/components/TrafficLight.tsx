@@ -1,15 +1,16 @@
 import { motion } from 'motion/react'
-import { teamTotals } from '../data/story'
+import { eventChipIds, teamTotals } from '../data/story'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 const rows = [
-  { count: teamTotals.danger, label: 'Срочно', hint: 'решить с РОПом', tone: 'danger' as const },
-  { count: teamTotals.warn, label: 'Проверить', hint: 'нужен контроль', tone: 'warn' as const },
-  { count: teamTotals.ok, label: 'В норме', hint: 'движется по плану', tone: 'ok' as const },
+  { count: teamTotals.danger, label: 'Срочно', hint: 'решить с РОПом', tone: 'danger' as const, layoutId: eventChipIds.Просрочка },
+  { count: teamTotals.warn, label: 'Проверить', hint: 'нужен контроль', tone: 'warn' as const, layoutId: eventChipIds.Этап },
+  { count: teamTotals.ok, label: 'В норме', hint: 'движется по плану', tone: 'ok' as const, layoutId: eventChipIds.Комментарий },
 ]
 
-export function TrafficLight({ reveal = true }: { reveal?: boolean }) {
+export function TrafficLight() {
   const reduced = usePrefersReducedMotion()
+  const layoutTransition = { duration: reduced ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] as const }
 
   return (
     <div className="traffic" aria-label="Светофор сделок">
@@ -19,14 +20,13 @@ export function TrafficLight({ reveal = true }: { reveal?: boolean }) {
         <span className="status-dot status-ok" />
       </div>
       <div className="traffic-rows">
-        {rows.map((row, index) => (
+        {rows.map((row) => (
           <motion.div
             key={row.label}
+            layoutId={reduced ? undefined : row.layoutId}
+            layout={!reduced}
+            transition={{ layout: layoutTransition }}
             className={`traffic-row traffic-${row.tone}`}
-            initial={reveal && !reduced ? { opacity: 0, y: 12 } : false}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ delay: reduced ? 0 : index * 0.16, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
             <strong>{row.count}</strong>
             <span>

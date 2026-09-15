@@ -1,16 +1,9 @@
-import { useMotionValueEvent } from 'motion/react'
-import { useState } from 'react'
 import { Checkpoint } from '../components/Checkpoint'
 import { FeedbackLoop, useLoopProgress } from '../components/FeedbackLoop'
 import { ForgottenCase } from '../components/ProofCases'
 
 export function ChapterLoop() {
   const { ref, value } = useLoopProgress()
-  const [progress, setProgress] = useState(0)
-
-  useMotionValueEvent(value, 'change', (latest) => {
-    setProgress(latest)
-  })
 
   return (
     <div className="chapter chapter-loop" ref={ref}>
@@ -22,7 +15,7 @@ export function ChapterLoop() {
         </Checkpoint>
       </div>
       <div className="chapter-visual chapter-visual-open">
-        <FeedbackLoop progress={progress} />
+        <FeedbackLoop progress={value} />
       </div>
     </div>
   )

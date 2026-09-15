@@ -1,10 +1,24 @@
-import { useRef } from 'react'
-import { useScroll, useTransform } from 'motion/react'
+import { useMotionValueEvent, useScroll, type MotionValue } from 'motion/react'
+import { useRef, useState } from 'react'
 import { focusDeal, loopEvent, loopSteps } from '../data/story'
 
-export function FeedbackLoop({ progress }: { progress: number }) {
-  const resolved = progress >= 0.72
-  const acted = progress >= 0.45
+function stageFromProgress(value: number) {
+  if (value >= 0.72) return 2
+  if (value >= 0.45) return 1
+  return 0
+}
+
+export function FeedbackLoop({ progress }: { progress: MotionValue<number> }) {
+  const [stage, setStage] = useState(() => stageFromProgress(progress.get()))
+
+  useMotionValueEvent(progress, 'change', (value) => {
+    const next = stageFromProgress(value)
+    setStage((current) => (current === next ? current : next))
+  })
+
+  const acted = stage >= 1
+  const resolved = stage >= 2
+  const litUntil = stage === 0 ? 0 : stage === 1 ? 2 : 4
 
   return (
     <div className="loop-stage">
@@ -22,10 +36,7 @@ export function FeedbackLoop({ progress }: { progress: number }) {
       </article>
       <div className="loop-ring" aria-hidden="true">
         {loopSteps.map((step, index) => (
-          <span
-            key={step}
-            className={progress > index / loopSteps.length ? 'is-on' : undefined}
-          >
+          <span key={step} className={index <= litUntil ? 'is-on' : undefined}>
             {step}
           </span>
         ))}
@@ -40,6 +51,5 @@ export function useLoopProgress() {
     target: ref,
     offset: ['start 0.7', 'end 0.35'],
   })
-  const value = useTransform(scrollYProgress, [0, 1], [0, 1])
-  return { ref, value }
+  return { ref, value: scrollYProgress }
 }

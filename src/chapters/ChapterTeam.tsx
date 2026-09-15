@@ -1,21 +1,23 @@
-import { LayoutGroup, motion, useScroll, useTransform, type MotionValue } from 'motion/react'
+import { LayoutGroup, motion } from 'motion/react'
 import { Checkpoint } from '../components/Checkpoint'
 import { TeamBoard } from '../components/TeamBoard'
-import { eventChips } from '../data/story'
+import { eventChipIds, eventChips } from '../data/story'
 import { useChapterPhase } from '../hooks/useChapterPhase'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 const CHAPTER_IDS = ['signal', 'team', 'manager', 'deal'] as const
 
 const chipLayout = [
-  { left: '8%', top: '10%', x: 28, y: 18 },
-  { right: '12%', top: '8%', x: -34, y: 16 },
-  { left: '30%', top: '34%', x: 14, y: 10 },
-  { right: '8%', top: '42%', x: -24, y: 8 },
-  { left: '6%', top: '60%', x: 36, y: -12 },
-  { left: '44%', top: '72%', x: 6, y: -22 },
-  { right: '14%', top: '78%', x: -18, y: -28 },
+  { left: '8%', top: '10%' },
+  { right: '12%', top: '8%' },
+  { left: '30%', top: '34%' },
+  { right: '8%', top: '42%' },
+  { left: '6%', top: '60%' },
+  { left: '44%', top: '72%' },
+  { right: '14%', top: '78%' },
 ]
+
+const layoutTransition = { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }
 
 export function ChapterTeam() {
   const { index } = useChapterPhase(CHAPTER_IDS)
@@ -58,56 +60,32 @@ export function ChapterTeam() {
 }
 
 function EventField({ reduced }: { reduced: boolean }) {
-  const { scrollYProgress } = useScroll()
-  const converge = useTransform(scrollYProgress, [0, 0.12], [0, 1])
-
   return (
     <div className="event-cloud event-cloud-chapter" aria-hidden="true">
-      {eventChips.map((chip, index) => (
-        <EventChip
-          key={chip}
-          chip={chip}
-          index={index}
-          point={chipLayout[index]}
-          converge={converge}
-          reduced={reduced}
-        />
-      ))}
+      {eventChips.map((chip, index) => {
+        const point = chipLayout[index]
+        return (
+          <motion.span
+            key={chip}
+            layoutId={reduced ? undefined : eventChipIds[chip]}
+            layout={!reduced}
+            style={{
+              left: point.left,
+              right: 'right' in point ? point.right : undefined,
+              top: point.top,
+            }}
+            initial={reduced ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.2 + index * 0.07,
+              duration: 0.45,
+              layout: reduced ? { duration: 0 } : layoutTransition,
+            }}
+          >
+            {chip}
+          </motion.span>
+        )
+      })}
     </div>
-  )
-}
-
-function EventChip({
-  chip,
-  index,
-  point,
-  converge,
-  reduced,
-}: {
-  chip: string
-  index: number
-  point: (typeof chipLayout)[number]
-  converge: MotionValue<number>
-  reduced: boolean
-}) {
-  const x = useTransform(converge, [0, 1], [0, point.x])
-  const y = useTransform(converge, [0, 1], [0, point.y])
-
-  return (
-    <motion.span
-      layoutId={`chip-${chip}`}
-      style={{
-        left: point.left,
-        right: 'right' in point ? point.right : undefined,
-        top: point.top,
-        x: reduced ? 0 : x,
-        y: reduced ? 0 : y,
-      }}
-      initial={reduced ? false : { opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 + index * 0.07, duration: 0.45 }}
-    >
-      {chip}
-    </motion.span>
   )
 }

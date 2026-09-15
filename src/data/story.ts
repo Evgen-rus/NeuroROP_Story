@@ -10,6 +10,16 @@ export const eventChips = [
   'КП',
 ] as const
 
+export const eventChipIds = {
+  Звонок: 'event-chip-call',
+  Задача: 'event-chip-task',
+  Сообщение: 'event-chip-message',
+  Комментарий: 'event-chip-comment',
+  Этап: 'event-chip-stage',
+  Просрочка: 'event-chip-overdue',
+  КП: 'deal-19023',
+} as const
+
 export const contextSources = [
   'Звонки',
   'Сообщения',

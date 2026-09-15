@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react'
 import { dozhimInsight, dozhimTactics, focusDeal, voicePhrase } from '../data/story'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
+import { FollowupSteps } from './FollowupSteps'
 
 type TacticId = (typeof dozhimTactics)[number]['id']
 
@@ -73,63 +74,69 @@ export function DozhimWorkspace({ mode = 'open', onOpen }: DozhimWorkspaceProps)
             </nav>
           </aside>
           <div className="dozhim-main">
-            <section className="insight-card insight-warn">
-              <small>Понял ситуацию</small>
-              <p>{dozhimInsight.understood}</p>
-            </section>
-            <p className="lever">Рычаг дожима · {dozhimInsight.lever}</p>
+            {mode === 'followup' ? (
+              <FollowupSteps />
+            ) : (
+              <>
+                <section className="insight-card insight-warn">
+                  <small>Понял ситуацию</small>
+                  <p>{dozhimInsight.understood}</p>
+                </section>
+                <p className="lever">Рычаг дожима · {dozhimInsight.lever}</p>
 
-            <div className="tactic-tabs" role="tablist" aria-label="Сценарии дожима">
-              {dozhimTactics.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={item.id === tactic}
-                  className={item.id === tactic ? 'is-on' : undefined}
-                  onClick={() => setTactic(item.id)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
+                <div className="tactic-tabs" role="tablist" aria-label="Сценарии дожима">
+                  {dozhimTactics.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={item.id === tactic}
+                      className={item.id === tactic ? 'is-on' : undefined}
+                      onClick={() => setTactic(item.id)}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
 
-            <article className="message-card">
-              <small>Сообщение клиенту</small>
-              <p>{selected.message}</p>
-            </article>
+                <article className="message-card">
+                  <small>Сообщение клиенту</small>
+                  <p>{selected.message}</p>
+                </article>
 
-            <div className="dozhim-extras">
-              <article>
-                <small>Лайфхак</small>
-                <p>{dozhimInsight.hack}</p>
-              </article>
-              <article>
-                <small>Если не сработало</small>
-                <p>{dozhimInsight.fallback}</p>
-              </article>
-            </div>
+                <div className="dozhim-extras">
+                  <article>
+                    <small>Лайфхак</small>
+                    <p>{dozhimInsight.hack}</p>
+                  </article>
+                  <article>
+                    <small>Если не сработало</small>
+                    <p>{dozhimInsight.fallback}</p>
+                  </article>
+                </div>
 
-            <div className="voice-dock">
-              <textarea
-                id={draftId}
-                aria-label="Вопрос менеджера"
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                placeholder="Уточните рычаг, тон или что уже пробовали…"
-              />
-              <div className="voice-actions">
-                <button type="button" className="ghost" onClick={startVoice}>
-                  {voice === 'recording' ? 'Слушаю…' : 'Говорить'}
-                </button>
-                {voice === 'recording' ? (
-                  <span className="waveform" aria-hidden="true">
-                    <i /><i /><i /><i /><i />
-                  </span>
-                ) : null}
-                <button type="button" className="primary">Отправить</button>
-              </div>
-            </div>
+                <div className="voice-dock">
+                  <textarea
+                    id={draftId}
+                    aria-label="Вопрос менеджера"
+                    value={draft}
+                    onChange={(event) => setDraft(event.target.value)}
+                    placeholder="Уточните рычаг, тон или что уже пробовали…"
+                  />
+                  <div className="voice-actions">
+                    <button type="button" className="ghost" onClick={startVoice}>
+                      {voice === 'recording' ? 'Слушаю…' : 'Говорить'}
+                    </button>
+                    {voice === 'recording' ? (
+                      <span className="waveform" aria-hidden="true">
+                        <i /><i /><i /><i /><i />
+                      </span>
+                    ) : null}
+                    <button type="button" className="primary">Отправить</button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </>
       )}
