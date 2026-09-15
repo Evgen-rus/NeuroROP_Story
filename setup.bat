@@ -68,11 +68,11 @@ if errorlevel 1 (
 echo [OK] Node:
 node -v
 echo [OK] npm:
-npm -v
+call npm -v
 >>"%REPORT%" echo [OK] Node:
 node -v >>"%REPORT%" 2>&1
 >>"%REPORT%" echo [OK] npm:
-npm -v >>"%REPORT%" 2>&1
+call npm -v >>"%REPORT%" 2>&1
 
 if exist node_modules (
   echo [i] node_modules уже есть. npm синхронизирует только нужные зависимости.
