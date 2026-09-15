@@ -54,10 +54,10 @@ export function DozhimWorkspace({ mode = 'open', onOpen }: DozhimWorkspaceProps)
           <div>
             <small>Сделка #{focusDeal.id}</small>
             <h4>Дожим</h4>
-            <p>Контекст сделки уже внутри. Можно не объяснять ситуацию заново.</p>
+            <p>Чтобы не упустить клиента и продвинуть сделку на следующий шаг.</p>
           </div>
           <button type="button" className="dozhim-open" onClick={onOpen}>
-            Открыть дожим сделки
+            Открыть Дожим
           </button>
         </div>
       ) : (

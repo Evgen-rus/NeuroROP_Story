@@ -1,4 +1,5 @@
-import { managers, sideDeals, teamTotals } from '../data/story'
+import { motion } from 'motion/react'
+import { managerLoad, managers, sideDeals, teamTotals } from '../data/story'
 import { ProductFrame, StatusDot } from './ProductFrame'
 import { TrafficLight } from './TrafficLight'
 
@@ -9,15 +10,20 @@ function countLabel(count: number, one: string, few: string, many: string) {
   return `${count} ${word}`
 }
 
+type TeamPhase = 'assemble' | 'focus' | 'extract' | 'stuck'
+
 type TeamBoardProps = {
-  focusManager?: boolean
+  phase?: TeamPhase
 }
 
-export function TeamBoard({ focusManager = false }: TeamBoardProps) {
+export function TeamBoard({ phase = 'assemble' }: TeamBoardProps) {
+  const focusManager = phase === 'focus' || phase === 'extract' || phase === 'stuck'
+  const extract = phase === 'extract' || phase === 'stuck'
+
   return (
     <ProductFrame
       title="Итог команды"
-      subtitle="Срез на сейчас · синтетические данные"
+      subtitle="Демонстрационные данные презентации"
       pills={[
         { label: 'Всего сделок', value: String(teamTotals.deals) },
         { label: 'Звонков', value: String(teamTotals.calls) },
@@ -36,27 +42,56 @@ export function TeamBoard({ focusManager = false }: TeamBoardProps) {
               <p>
                 {countLabel(manager.deals, 'сделка', 'сделки', 'сделок')} · {countLabel(manager.calls, 'звонок', 'звонка', 'звонков')} · {countLabel(manager.messages, 'сообщение', 'сообщения', 'сообщений')}
               </p>
-              <div className="mini-counts">
-                <span>{manager.danger} срочно</span>
-                <span>{manager.warn} проверить</span>
-                <span>{manager.ok} в норме</span>
-              </div>
+              {manager.id === 'a' && focusManager ? (
+                <div className="load-grid" aria-label="Нагрузка менеджера, демонстрация">
+                  <span><strong>{managerLoad.today}</strong> задач сегодня</span>
+                  <span><strong>{managerLoad.overdue}</strong> просрочено</span>
+                  <span><strong>{managerLoad.moved}</strong> перенесено</span>
+                  <span><strong>{managerLoad.deals}</strong> активные сделки</span>
+                </div>
+              ) : (
+                <div className="mini-counts">
+                  <span>{manager.danger} срочно</span>
+                  <span>{manager.warn} проверить</span>
+                  <span>{manager.ok} в норме</span>
+                </div>
+              )}
             </article>
           ))}
         </div>
         <aside className="deal-mini-list">
-          {sideDeals.map((deal) => (
-            <div key={deal.id} className={`deal-mini deal-${deal.status}`}>
-              <StatusDot tone={deal.status} />
-              <div>
-                <strong>{deal.title}</strong>
-                <small>#{deal.id} · {deal.note}</small>
-              </div>
-              <em>{deal.amount}</em>
-            </div>
-          ))}
+          {sideDeals.map((deal) => {
+            const isFocus = deal.id === '19023'
+            if (extract && isFocus) {
+              return <div key={deal.id} className="deal-mini deal-placeholder" />
+            }
+            return (
+              <motion.div
+                layoutId={isFocus ? 'deal-19023' : undefined}
+                key={deal.id}
+                className={`deal-mini deal-${deal.status}`}
+              >
+                <StatusDot tone={deal.status} />
+                <div>
+                  <strong>{deal.title}</strong>
+                  <small>#{deal.id} · {deal.note}</small>
+                </div>
+                <em>{deal.amount}</em>
+              </motion.div>
+            )
+          })}
         </aside>
       </div>
+      {extract ? (
+        <motion.div layoutId="deal-19023" className={`extracted-deal ${phase === 'stuck' ? 'is-stuck' : ''}`}>
+          <small>Сделка #19023</small>
+          <h4>Проект Альфа</h4>
+          <p>2 200 000 ₽ · КП отправлено на согласование</p>
+          <span className={phase === 'stuck' ? 'chip chip-danger' : 'chip chip-warn'}>
+            {phase === 'stuck' ? 'Сделка уже стоит' : 'В CRM выглядит нормально'}
+          </span>
+        </motion.div>
+      ) : null}
     </ProductFrame>
   )
 }

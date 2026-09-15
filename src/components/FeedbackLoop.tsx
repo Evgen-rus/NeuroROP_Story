@@ -1,35 +1,45 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'motion/react'
-import { focusDeal, loopSteps } from '../data/story'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
+import { useRef } from 'react'
+import { useScroll, useTransform } from 'motion/react'
+import { focusDeal, loopEvent, loopSteps } from '../data/story'
 
-export function FeedbackLoop() {
-  const reduced = usePrefersReducedMotion()
-  const [resolved, setResolved] = useState(reduced)
+export function FeedbackLoop({ progress }: { progress: number }) {
+  const resolved = progress >= 0.72
+  const acted = progress >= 0.45
 
   return (
     <div className="loop-stage">
-      <motion.article
-        className={`loop-card ${resolved ? 'is-resolved' : ''}`}
-        onViewportEnter={() => setResolved(true)}
-        viewport={{ once: true, amount: 0.55 }}
-      >
+      <article className={`loop-card ${resolved ? 'is-resolved' : acted ? 'is-acting' : ''}`}>
         <small>Сделка #{focusDeal.id}</small>
         <h4>{focusDeal.title}</h4>
         <p>
-          {resolved
-            ? 'Согласующий и дата ответа зафиксированы. Следующая проверка — по новому событию в CRM.'
-            : focusDeal.situation}
+          {!acted && 'НейроРОП обнаружил риск: нет финального согласующего и даты ответа.'}
+          {acted && !resolved && loopEvent}
+          {resolved && 'Новое событие уже в CRM. Следующая проверка — по четвергу.'}
         </p>
-        <span className={resolved ? 'chip chip-ok' : 'chip chip-warn'}>
+        <span className={resolved ? 'chip chip-warn' : 'chip chip-danger'}>
           {resolved ? 'Проверить' : 'Срочно'}
         </span>
-      </motion.article>
+      </article>
       <div className="loop-ring" aria-hidden="true">
-        {loopSteps.map((step) => (
-          <span key={step}>{step}</span>
+        {loopSteps.map((step, index) => (
+          <span
+            key={step}
+            className={progress > index / loopSteps.length ? 'is-on' : undefined}
+          >
+            {step}
+          </span>
         ))}
       </div>
     </div>
   )
+}
+
+export function useLoopProgress() {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 0.7', 'end 0.35'],
+  })
+  const value = useTransform(scrollYProgress, [0, 1], [0, 1])
+  return { ref, value }
 }

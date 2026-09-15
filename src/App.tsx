@@ -1,28 +1,23 @@
 import { ProgressBar } from './components/ProgressBar'
 import { StoryRail } from './components/StoryRail'
-import { SceneHook } from './scenes/SceneHook'
-import { SceneDeal, SceneManager, SceneTeam } from './scenes/ScenesTeamZoom'
-import { SceneContext, SceneRisk, SceneRop } from './scenes/ScenesInsight'
-import { SceneDozhim, SceneQuickHelp, SceneTactic, SceneVoice } from './scenes/ScenesDozhim'
-import { SceneFinal, SceneLoop } from './scenes/ScenesClose'
+import { ChapterTeam } from './chapters/ChapterTeam'
+import { ChapterInsight } from './chapters/ChapterInsight'
+import { ChapterDozhim } from './chapters/ChapterDozhim'
+import { ChapterLoop } from './chapters/ChapterLoop'
+import { SceneFinal } from './chapters/SceneFinal'
+import { usePresenterMode } from './hooks/usePresenterMode'
 
 export function App() {
+  usePresenterMode()
+
   return (
     <main>
       <ProgressBar />
       <StoryRail />
-      <SceneHook />
-      <SceneTeam />
-      <SceneManager />
-      <SceneDeal />
-      <SceneContext />
-      <SceneRisk />
-      <SceneRop />
-      <SceneDozhim />
-      <SceneTactic />
-      <SceneVoice />
-      <SceneQuickHelp />
-      <SceneLoop />
+      <ChapterTeam />
+      <ChapterInsight />
+      <ChapterDozhim />
+      <ChapterLoop />
       <SceneFinal />
     </main>
   )

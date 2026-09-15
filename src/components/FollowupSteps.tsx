@@ -8,7 +8,7 @@ export function FollowupSteps({ openCount = 4 }: { openCount?: number }) {
       <header>
         <div>
           <small>Продолжение переписки</small>
-          <h4>Quick Help</h4>
+          <h4>Дожим</h4>
         </div>
         <p>Цель: {followupGoal}</p>
       </header>
