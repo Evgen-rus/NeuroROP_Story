@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.vite/
+.DS_Store
+*.log
+.env
+.env.*
+!/.env.example
+# Raw user screenshots are local references only. Do not commit to public repos.
+references/raw/
+
+setup-report.txt
