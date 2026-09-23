@@ -522,13 +522,17 @@ p, li, dd { text-wrap: pretty; }
   gap: 16px;
   min-height: 62vh;
 }
-.dozhim-entry { display: grid; place-items: center; }
-.dozhim-launch {
-  width: min(520px, 100%);
-  display: grid;
-  gap: 16px;
-  text-align: left;
+.dozhim-transition { min-width: 0; }
+.dozhim-transition .stage-board { min-height: 62vh; }
+.hero-deal .dozhim-open { margin-top: 14px; }
+.dozhim-deal-context {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
 }
+.dozhim-deal-context h4 { margin: 4px 0; }
+.dozhim-deal-context p { margin: 0; font-size: 12px; }
 .dozhim-side {
   background: #f7faff;
   border-radius: 18px;
@@ -537,8 +541,7 @@ p, li, dd { text-wrap: pretty; }
   align-content: start;
   gap: 8px;
 }
-.dozhim-side nav { display: grid; gap: 6px; margin-top: 12px; }
-.dozhim-side nav span,
+.dozhim-side > strong:focus { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 3px; }
 .tactic-tabs button {
   border: 1px solid transparent;
   background: transparent;
@@ -550,7 +553,6 @@ p, li, dd { text-wrap: pretty; }
   min-height: 40px;
   transition: background-color 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out, transform 120ms ease-out;
 }
-.dozhim-side nav span.is-on,
 .tactic-tabs button.is-on {
   background: white;
   border-color: var(--line);
@@ -581,6 +583,8 @@ p, li, dd { text-wrap: pretty; }
   resize: vertical;
 }
 .voice-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+.voice-actions .primary { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.demo-note { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
 .waveform { display: flex; gap: 3px; height: 18px; align-items: end; }
 .waveform i {
   width: 3px;
@@ -672,6 +676,10 @@ p, li, dd { text-wrap: pretty; }
   align-items: start;
 }
 .chapter-copy { min-width: 0; }
+.chapter-dozhim .chapter-visual { grid-column: 2; grid-row: 1 / span 2; }
+.chapter-dozhim .chapter-copy-cont { grid-column: 1; grid-row: 2; }
+.chapter-dozhim { overflow-anchor: none; }
+.mobile-followup { display: none; }
 .checkpoint {
   min-height: 118vh;
   display: flex;
@@ -898,6 +906,11 @@ p, li, dd { text-wrap: pretty; }
   .hero-sticky { min-height: auto; }
   .event-cloud { min-height: 380px; }
   .load-grid { grid-template-columns: 1fr; }
+  .chapter-dozhim .chapter-visual,
+  .chapter-dozhim .chapter-copy-cont { grid-column: 1; grid-row: auto; }
+  .mobile-followup { display: block; margin-top: 28px; }
+  .mobile-followup .followup header { flex-direction: column; align-items: flex-start; }
+  .voice-actions { flex-wrap: wrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {

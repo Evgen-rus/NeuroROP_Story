@@ -1,4 +1,5 @@
-import { useEffect, useId, useState } from 'react'
+import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
 import { dozhimInsight, dozhimTactics, focusDeal, voicePhrase } from '../data/story'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import { FollowupSteps } from './FollowupSteps'
@@ -6,17 +7,22 @@ import { FollowupSteps } from './FollowupSteps'
 type TacticId = (typeof dozhimTactics)[number]['id']
 
 type DozhimWorkspaceProps = {
-  mode?: 'entry' | 'open' | 'voice' | 'followup'
-  onOpen?: () => void
+  mode?: 'open' | 'voice' | 'followup'
+  focusOnOpen?: boolean
+  sharedLayout?: boolean
 }
 
-export function DozhimWorkspace({ mode = 'open', onOpen }: DozhimWorkspaceProps) {
-  const draftId = useId()
+export function DozhimWorkspace({ mode = 'open', focusOnOpen = false, sharedLayout = true }: DozhimWorkspaceProps) {
   const reduced = usePrefersReducedMotion()
+  const headingRef = useRef<HTMLElement>(null)
   const [tactic, setTactic] = useState<TacticId>('pause')
   const [voice, setVoice] = useState<'idle' | 'recording' | 'done'>('idle')
   const [draft, setDraft] = useState('')
   const selected = dozhimTactics.find((item) => item.id === tactic) ?? dozhimTactics[0]
+
+  useEffect(() => {
+    if (focusOnOpen) headingRef.current?.focus({ preventScroll: true })
+  }, [focusOnOpen])
 
   useEffect(() => {
     if (mode !== 'voice') return
@@ -49,29 +55,14 @@ export function DozhimWorkspace({ mode = 'open', onOpen }: DozhimWorkspaceProps)
   }
 
   return (
-    <div className={`dozhim ${mode === 'entry' ? 'dozhim-entry' : 'dozhim-modal'}`}>
-      {mode === 'entry' ? (
-        <div className="dozhim-launch">
-          <div>
-            <small>Сделка #{focusDeal.id}</small>
-            <h4>Дожим</h4>
-            <p>Чтобы не упустить клиента и продвинуть сделку на следующий шаг.</p>
-          </div>
-          <button type="button" className="dozhim-open" onClick={onOpen}>
-            Открыть Дожим
-          </button>
-        </div>
-      ) : (
-        <>
+    <div className="dozhim dozhim-modal">
           <aside className="dozhim-side">
-            <strong>Дожим</strong>
-            <small>#{focusDeal.id} · {focusDeal.title}</small>
-            <p>{focusDeal.stage}</p>
-            <nav>
-              <span className="is-on">Дожим</span>
-              <span>История</span>
-              <span>Контекст сделки</span>
-            </nav>
+            <motion.div className="dozhim-deal-context" layoutId={!reduced && sharedLayout ? 'dozhim-deal' : undefined}>
+              <small>Сделка #{focusDeal.id}</small>
+              <h4>{focusDeal.title}</h4>
+              <p>{focusDeal.amount} · {focusDeal.stage}</p>
+            </motion.div>
+            <strong ref={headingRef} tabIndex={-1}>Дожим</strong>
           </aside>
           <div className="dozhim-main">
             {mode === 'followup' ? (
@@ -84,13 +75,12 @@ export function DozhimWorkspace({ mode = 'open', onOpen }: DozhimWorkspaceProps)
                 </section>
                 <p className="lever">Рычаг дожима · {dozhimInsight.lever}</p>
 
-                <div className="tactic-tabs" role="tablist" aria-label="Сценарии дожима">
+                <div className="tactic-tabs" aria-label="Сценарии дожима">
                   {dozhimTactics.map((item) => (
                     <button
                       key={item.id}
                       type="button"
-                      role="tab"
-                      aria-selected={item.id === tactic}
+                      aria-pressed={item.id === tactic}
                       className={item.id === tactic ? 'is-on' : undefined}
                       onClick={() => setTactic(item.id)}
                     >
@@ -117,11 +107,11 @@ export function DozhimWorkspace({ mode = 'open', onOpen }: DozhimWorkspaceProps)
 
                 <div className="voice-dock">
                   <textarea
-                    id={draftId}
                     aria-label="Вопрос менеджера"
                     value={draft}
                     onChange={(event) => setDraft(event.target.value)}
                     placeholder="Уточните рычаг, тон или что уже пробовали…"
+                    maxLength={500}
                   />
                   <div className="voice-actions">
                     <button type="button" className="ghost" onClick={startVoice}>
@@ -132,14 +122,13 @@ export function DozhimWorkspace({ mode = 'open', onOpen }: DozhimWorkspaceProps)
                         <i /><i /><i /><i /><i />
                       </span>
                     ) : null}
-                    <button type="button" className="primary">Отправить</button>
+                    <a className="primary" href="#quickhelp">Показать пример ответа</a>
                   </div>
+                  <p className="demo-note">Демонстрация: текст и голос никуда не отправляются. Далее — заранее подготовленный пример ответа.</p>
                 </div>
               </>
             )}
           </div>
-        </>
-      )}
     </div>
   )
 }

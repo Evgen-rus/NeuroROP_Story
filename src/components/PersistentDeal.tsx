@@ -1,17 +1,23 @@
+import { motion } from 'motion/react'
 import { focusDeal, riskQuestions, ropHelp } from '../data/story'
 
 type DealStage = 'context' | 'risk' | 'rop'
 
 const sources = ['Звонки', 'Сообщения', 'Задачи', 'Комментарии', 'Этап', 'История КП']
 
-export function PersistentDeal({ stage }: { stage: DealStage }) {
+export function PersistentDeal({ stage, onOpenDozhim, reduced = false }: { stage: DealStage; onOpenDozhim?: () => void; reduced?: boolean }) {
   return (
     <div className={`stage-board stage-${stage}`}>
-      <article className="hero-deal">
+      <motion.article className="hero-deal" layoutId={onOpenDozhim && !reduced ? 'dozhim-deal' : undefined}>
         <small>Сделка #{focusDeal.id}</small>
         <h3>{focusDeal.title}</h3>
         <p>{focusDeal.amount} · {focusDeal.stage}</p>
-      </article>
+        {onOpenDozhim ? (
+          <button type="button" className="dozhim-open" onClick={onOpenDozhim}>
+            Открыть дожим сделки
+          </button>
+        ) : null}
+      </motion.article>
 
       <div className={`orbit ${stage === 'context' ? 'is-on' : 'is-settled'}`}>
         {sources.map((source) => (
