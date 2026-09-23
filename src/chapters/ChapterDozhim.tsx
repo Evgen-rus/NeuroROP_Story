@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
 import { Checkpoint } from '../components/Checkpoint'
-import { DealQuiz } from '../components/DealQuiz'
 import { DozhimWorkspace } from '../components/DozhimWorkspace'
 import { FollowupSteps } from '../components/FollowupSteps'
 import { PersistentDeal } from '../components/PersistentDeal'
@@ -12,7 +11,6 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 const CHAPTER_IDS = ['dozhim', 'tactic', 'voice', 'quickhelp'] as const
 
 export function ChapterDozhim() {
-  const { index } = useChapterPhase(CHAPTER_IDS)
   const [opened, setOpened] = useState(false)
   const [compact, setCompact] = useState(false)
   const reduced = usePrefersReducedMotion()
@@ -23,6 +21,7 @@ export function ChapterDozhim() {
     media.addEventListener('change', update)
     return () => media.removeEventListener('change', update)
   }, [])
+  const { index } = useChapterPhase(CHAPTER_IDS, compact ? '-20% 0px -20% 0px' : undefined)
   const open = opened || index > 0
   const mode = !open ? 'entry' : index >= 3 ? 'followup' : index >= 2 ? 'voice' : 'open'
   const sharedLayout = !reduced && !compact
@@ -33,6 +32,17 @@ export function ChapterDozhim() {
         <Checkpoint id="dozhim" kicker="08" title={<>Увидеть риск недостаточно.</>}>
           <p>Сделку всё равно должен двигать менеджер. И помощь получает он тоже.</p>
           <p>Чтобы не упустить клиента и продвинуть сделку на следующий шаг.</p>
+        </Checkpoint>
+      </div>
+      <div className="chapter-copy chapter-copy-tactic">
+        <Checkpoint id="tactic" kicker="09" title={<>Не общий совет.</>}>
+          <p>Следующий конкретный ход по этой сделке.</p>
+          <ContactCase />
+        </Checkpoint>
+      </div>
+      <div className="chapter-copy chapter-copy-voice">
+        <Checkpoint id="voice" kicker="10" title={<>Не нужно формулировать<br />идеальный запрос.</>}>
+          <p>Можно просто рассказать, что произошло.</p>
         </Checkpoint>
       </div>
       <div className="chapter-visual chapter-visual-open">
@@ -51,17 +61,8 @@ export function ChapterDozhim() {
         </LayoutGroup>
       </div>
       <div className="chapter-copy chapter-copy-cont">
-        <Checkpoint id="tactic" kicker="09" title={<>Не общий совет.</>}>
-          <p>Следующий конкретный ход по этой сделке.</p>
-          <ContactCase />
-        </Checkpoint>
-        <Checkpoint id="voice" kicker="10" title={<>Не нужно формулировать<br />идеальный запрос.</>}>
-          <p>Можно просто рассказать, что произошло.</p>
-        </Checkpoint>
         <Checkpoint id="quickhelp" kicker="11" title="Контекст уже внутри.">
           <p>НейроРОП уже знает историю сделки. Поэтому отвечает не общим советом, а конкретным действием.</p>
-          <div className="mobile-followup"><FollowupSteps /></div>
-          <DealQuiz />
         </Checkpoint>
       </div>
     </div>

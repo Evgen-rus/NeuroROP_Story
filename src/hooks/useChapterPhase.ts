@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export function useChapterPhase(ids: readonly string[]) {
+export function useChapterPhase(ids: readonly string[], rootMargin = '-42% 0px -42% 0px') {
   const [activeId, setActiveId] = useState(ids[0])
 
   useEffect(() => {
@@ -15,12 +15,12 @@ export function useChapterPhase(ids: readonly string[]) {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
         if (visible?.target.id) setActiveId(visible.target.id)
       },
-      { rootMargin: '-42% 0px -42% 0px', threshold: [0.12, 0.35, 0.6] },
+      { rootMargin, threshold: [0.12, 0.35, 0.6] },
     )
 
     nodes.forEach((node) => observer.observe(node))
     return () => observer.disconnect()
-  }, [ids])
+  }, [ids, rootMargin])
 
   const index = Math.max(0, ids.indexOf(activeId))
   return { activeId, index }

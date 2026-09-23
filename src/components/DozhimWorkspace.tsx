@@ -54,6 +54,30 @@ export function DozhimWorkspace({ mode = 'open', focusOnOpen = false, sharedLayo
     setVoice('recording')
   }
 
+  const voiceDock = (
+    <div className="voice-dock">
+      <textarea
+        aria-label="Вопрос менеджера"
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
+        placeholder="Уточните рычаг, тон или что уже пробовали…"
+        maxLength={500}
+      />
+      <div className="voice-actions">
+        <button type="button" className="ghost" onClick={startVoice}>
+          {voice === 'recording' ? 'Слушаю…' : 'Говорить'}
+        </button>
+        {voice === 'recording' ? (
+          <span className="waveform" aria-hidden="true">
+            <i /><i /><i /><i /><i />
+          </span>
+        ) : null}
+        <a className="primary" href="#quickhelp">Показать пример ответа</a>
+      </div>
+      <p className="demo-note">Демонстрация: текст и голос никуда не отправляются. Далее — заранее подготовленный пример ответа.</p>
+    </div>
+  )
+
   return (
     <div className="dozhim dozhim-modal">
           <aside className="dozhim-side">
@@ -69,6 +93,7 @@ export function DozhimWorkspace({ mode = 'open', focusOnOpen = false, sharedLayo
               <FollowupSteps />
             ) : (
               <>
+                {mode === 'voice' ? voiceDock : null}
                 <section className="insight-card insight-warn">
                   <small>Понял ситуацию</small>
                   <p>{dozhimInsight.understood}</p>
@@ -105,27 +130,7 @@ export function DozhimWorkspace({ mode = 'open', focusOnOpen = false, sharedLayo
                   </article>
                 </div>
 
-                <div className="voice-dock">
-                  <textarea
-                    aria-label="Вопрос менеджера"
-                    value={draft}
-                    onChange={(event) => setDraft(event.target.value)}
-                    placeholder="Уточните рычаг, тон или что уже пробовали…"
-                    maxLength={500}
-                  />
-                  <div className="voice-actions">
-                    <button type="button" className="ghost" onClick={startVoice}>
-                      {voice === 'recording' ? 'Слушаю…' : 'Говорить'}
-                    </button>
-                    {voice === 'recording' ? (
-                      <span className="waveform" aria-hidden="true">
-                        <i /><i /><i /><i /><i />
-                      </span>
-                    ) : null}
-                    <a className="primary" href="#quickhelp">Показать пример ответа</a>
-                  </div>
-                  <p className="demo-note">Демонстрация: текст и голос никуда не отправляются. Далее — заранее подготовленный пример ответа.</p>
-                </div>
+                {mode === 'open' ? voiceDock : null}
               </>
             )}
           </div>

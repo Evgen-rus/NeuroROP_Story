@@ -27,9 +27,8 @@ export function ChapterTeam() {
   return (
     <div className="chapter">
       <div className="chapter-copy">
-        <Checkpoint id="signal" kicker="01" title="CRM фиксирует работу.">
+        <Checkpoint id="signal" kicker="01" title="CRM хранит события. НейроРОП превращает их в решение.">
           <p>Но не говорит РОПу, где сейчас теряется сделка.</p>
-          <p className="accent-line">НейроРОП превращает события в решение.</p>
         </Checkpoint>
         <Checkpoint id="team" kicker="02" title="Не все сделки требуют внимания.">
           <p>Важно вовремя увидеть те, где уже теряются деньги.</p>
